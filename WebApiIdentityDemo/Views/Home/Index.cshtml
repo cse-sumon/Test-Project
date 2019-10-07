@@ -1,0 +1,96 @@
+﻿<div style="height:200px; background-color:#e6e6e6; margin-bottom:25px; border-bottom:3px solid silver">
+
+    @Html.Partial("~/Views/Shared/_PartialSlider.cshtml");
+
+</div>
+
+<h5>Main Content</h5><hr />
+<p id="message" class="text-danger">No Product Found!!!</p>
+<div id="product" class="col-md-12">
+
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //product view
+        $.ajax({
+            url: "http://localhost:3698/api/FrontEnd/GetProduct",
+            type: "Get",
+            cache: false,
+            contentType: "application/json",
+            success: function (res) {
+                $('#message').hide();
+                var product = '';
+                $.each(res, function (index, item) {
+                    product += "<div class='card col-md-4'>"
+                        +
+                        "<img class='card-img-top' style='width:200px; height:200px' id='image' src= " + item.Image + " alt='Card image cap'>"
+                        +
+                        "<div class='card-body'></div>"
+                        +
+                        "<h4 class='card-title' id='card-title'>" + item.Name + "</h4>"
+                        +
+                        "<p class='card-text' id='card-description'>" + item.Description + "</p>"
+                        +
+                        "<a href='#' class='btn btn-primary'>Details</a>"
+                        +
+                        "</div>";
+
+                });
+                    $('#product').append(product);
+                
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+
+
+        //select products by category
+        $(document).on('click', '#category', function () {
+            var id = ($(this).attr('value'));
+            $.ajax({
+                url: "http://localhost:3698/api/FrontEnd/GetProduct/"+id,
+                type: "Get",
+                cache: false,
+                contentType: "application/json",
+                success: function (res) {
+                    if (res == "") {
+                        $('#message').show();
+                        $('#product').empty();
+                    }
+                    else {
+                        $('#message').hide();
+                        $('#product').empty();
+                        var product = '';
+                        $.each(res, function (index, item) {
+                            product += "<div class='card col-md-4'>"
+                                +
+                                "<img class='card-img-top' style='width:200px; height:200px' id='image' src= " + item.Image + " alt='Card image cap'>"
+                                +
+                                "<div class='card-body'></div>"
+                                +
+                                "<h4 class='card-title' id='card-title'>" + item.Name + "</h4>"
+                                +
+                                "<p class='card-text' id='card-description'>" + item.Description + "</p>"
+                                +
+                                "<a href='#' class='btn btn-primary'>Details</a>"
+                                +
+                                "</div>";
+
+                        });
+                        $('#product').append(product);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+
+        });
+    });
+</script>

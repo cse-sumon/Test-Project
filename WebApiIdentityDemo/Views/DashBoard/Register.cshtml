@@ -1,0 +1,133 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Register</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/css/mdb.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="col-md-5" style="margin:auto">
+        <!-- Material form register -->
+        <div class="card">
+
+            <h5 class="card-header info-color white-text text-center py-4">
+                <strong>Sign up</strong>
+            </h5>
+
+            <!--Card content-->
+            <div class="card-body px-lg-5 pt-0" style="margin-top:25px">
+
+                <!-- Form -->
+                <form class="text-center" style="color: #757575;"id="registrationForm">
+
+                    <!-- E-mail -->
+                    <div class="md-form mt-0">
+                        <input type="email" id="email" name="email" class="form-control">
+                        <label for="email">E-mail</label>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="md-form">
+                        <input type="password" id="password" name="password" class="form-control" aria-describedby="materialRegisterFormPasswordHelpBlock">
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="md-form">
+                        <input type="password" id="confirmpassword" name="confirmpassword" class="form-control" aria-describedby="materialRegisterFormPasswordHelpBlock">
+                        <label for="confirmpassword">Confirm Password</label>
+                    </div>
+
+
+                    <!-- Sign up button -->
+                    <button class="btn btn-primary btn-rounded btn-block my-4 waves-effect z-depth-0" type="submit">Sign Up</button>
+                    <p>
+                        Already Registerd?
+                        <a href="login">Login</a>
+                    </p>
+                    <!-- Social register -->
+                    <p>or sign up with:</p>
+
+                    <a type="button" class="btn-floating btn-fb btn-sm">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a type="button" class="btn-floating btn-tw btn-sm">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a type="button" class="btn-floating btn-li btn-sm">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a type="button" class="btn-floating btn-git btn-sm">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </form>
+                <!-- Form -->
+                <p>Back to Home-> <a href="/home">Home</a></p>
+            </div>
+
+        </div>
+        <!-- Material form register -->
+    </div>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/js/mdb.min.js"></script>
+
+</body>
+</html>
+
+
+<script>
+
+
+    $(document).ready(function () {
+        //check the auth
+        if (localStorage.getItem('token') != null) {
+            window.location.replace("http://localhost:3698/dashboard/index");
+        }
+
+
+        $("#registrationForm").on('submit', function (e) {
+            e.preventDefault();
+            var ConfirmPassword= $("#confirmpassword").val();
+            var Password= $("#password").val();
+            var userData = {
+                Email: $("#email").val(),
+                Password: $("#password").val(),
+                ConfirmPassword: $("#confirmpassword").val()
+            };
+            if (Password == ConfirmPassword) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/account/register',
+                    data: userData
+                }).done(function (data) {
+                    console.log(data);
+                    window.location.replace("http://localhost:3698/dashboard/login");
+                }).fail(showError);
+
+                function showError(req, s, t) {
+                    alert('Request Status: ' + req.status + ' Status Text: ' + req.statusText + ' ' + req.responseText);
+                }
+
+            }
+            else
+                alert('Password not matched');
+         });
+        
+    });
+       
+
+</script>

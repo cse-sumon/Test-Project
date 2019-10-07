@@ -1,0 +1,487 @@
+﻿
+@{
+    ViewBag.Title = "Product";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h6>Product</h6>
+<style>
+    .modal modal-body {
+        max-height: 400px;
+        width: 100px;
+    }
+
+    .modal-body {
+        padding-left: 30px;
+    }
+    /*#addNew{
+        margin:5px;
+    }*/
+    #records_table {
+        background-color: lightgray
+    }
+
+    #status {
+        padding: 1px
+    }
+
+    tr {
+        text-align: center
+    }
+
+    .image {
+        width: 20px;
+        height: 20px
+    }
+</style>
+<div class="table-responsive text-nowrap">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Category Name</th>
+                <th scope="col">Name</th>
+                <th scope="col">Purchase Price</th>
+                <th scope="col">Sales Price</th>
+                <th scope="col">Description</th>
+                <th scope="col">Image</th>
+                <th scope="col">Status</th>
+                <th scope="col" colspan="2">
+                    Action
+                    <button class=" btn-primary" id="addNew" style="margin-left:50px">Add New</button>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+
+</div>
+
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Product</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+            <div class="modal-body">
+                <!--Section: Contact v.2-->
+                <section class="mb-12">
+                    <div class="row">
+                        <!--Grid column-->
+                        <div class="col-md-12 mb-md-0 mb-5">
+
+                            <form id="addForm" name="addForm">
+                                <!--Grid row-->
+                                <div class="row">
+                                    <!--Grid column-->
+                                    <div class="col-md-6">
+                                        <div class="md-form mb-0">
+                                            <select name="CategoryId" id="CategoryId" class="form-control">
+                                                <option value="">Choose the Category</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--Grid column-->
+                                    <!--Grid column-->
+                                    <div class="col-md-6">
+                                        <div class="md-form mb-0">
+                                            <select name="Status" id="Status" class="form-control">
+                                                <option value="">Choose the Status</option>
+                                                <option value="1">Active</option>
+                                                <option value="0">InActive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--Grid column-->
+                                </div>
+                                <!--Grid row-->
+                                <!--Grid row-->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form mb-0">
+                                            <input placeholder="Product Name" type="text" id="Name" name="Name" class="form-control">
+                                            @*<label for="name" class="">Product Name</label>*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Grid row-->
+                                <!--Grid row-->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="md-form mb-0">
+                                            <input type="number" id="PurchasePrice" name="PurchasePrice" class="form-control">
+                                            <label for="purchaseprice" class="">Purchase Price</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="md-form mb-0">
+                                            <input type="number" id="SalesPrice" name="SalesPrice" class="form-control">
+                                            <label for="saleprice" class="">Sale Price</label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form mb-0">
+                                            <input type="file" id="Image" name="Image" class="form-control" onchange="Check(event)">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <!--Grid column-->
+                                    <div class="col-md-12">
+
+                                        <div class="md-form">
+                                            <textarea type="text" id="Description" name="Description" rows="2" class="form-control md-textarea"></textarea>
+                                            <label for="description">Product Description</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Grid row-->
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--Add Modal Start -->
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Product</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+            <div class="modal-body">
+                <form id="updateForm" name="updateForm">
+                    <!--Grid row-->
+                    <div class="row">
+                        <!--Grid column-->
+                        <div class="col-md-6">
+                            <div class="md-form mb-0">
+                                <select name="updateCategoryId" id="updateCategoryId" class="form-control">
+                                    <option value="">Choose the Category</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!--Grid column-->
+                        <!--Grid column-->
+                        <div class="col-md-6">
+                            <div class="md-form mb-0">
+                                <select name="updateStatus" id="updateStatus" class="form-control">
+                                    <option value="">Choose the Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">InActive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!--Grid column-->
+                    </div>
+                    <!--Grid row-->
+                    <!--Grid row-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="md-form mb-0">
+                                <input type="hidden" id="updateId" name="UpdateId">
+                                <input placeholder="Product Name" type="text" id="updateName" name="updateName" class="form-control">
+                                <label for="name" class="">Product Name</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Grid row-->
+                    <!--Grid row-->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="md-form mb-0">
+                                <input type="number" id="updatePurchasePrice" name="updatePurchasePrice" class="form-control">
+                                <label for="purchaseprice" class="">Purchase Price</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="md-form mb-0">
+                                <input type="number" id="updateSalesPrice" name="updateSalesPrice" class="form-control" placeholder="Sales Price">
+                                <label for="saleprice" class="">Sale Price</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="md-form mb-0">
+                                <input type="file" id="Image" name="Image" class="form-control" onchange="Check(event)">
+                                <img src="" id="updateImage" alt="Alternate Text"  width="80" height="80"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!--Grid column-->
+                        <div class="col-md-12">
+
+                            <div class="md-form">
+                                <textarea type="text" id="updateDescription" name="updateDescription" rows="2" class="form-control md-textarea"></textarea>
+                                <label for="description">Product Description</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Grid row-->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--Add Modal End -->
+
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    var imagepath = "";
+    function Check(event) {
+        imagepath = $(event.target).val();
+    }
+    function tokenCheck() {
+        if (localStorage.getItem('token') == null) {
+            window.location.replace("http://localhost:3698/dashboard/login");
+        }
+    }
+    //get data
+    $(document).ready(function () {
+       //auth check
+       
+        tokenCheck();
+        $.ajax({
+            url: "http://localhost:3698/api/product/",
+            type: "Get",
+            cache: false,
+            contentType: "application/json",
+            success: function (res) {
+                var trHTML = '';
+                $.each(res, function (index, item) {
+                    trHTML += '<tr><td>' + item.Id + '</td><td>'
+                        + item.CategoryName + '</td><td>'
+                        + item.Name + '</td><td>'
+                        + item.PurchasePrice + '</td><td>'
+                        + item.SalesPrice + '</td><td>'
+                        + item.Description + '</td><td>'
+                        + '<img class="image" src=' + item.Image + ' /></td><td>'
+                        + item.Status + '</td><td>'
+                        + "<button class='btn btn-warning btn-sm' type='button' id='editBtn'>Edit</button>" + " " + "<button class='btn btn-danger btn-sm' type='button' id='deleteBtn'>Delete</button>" + '</td></tr>';
+                });
+                $('#tbody').append(trHTML);
+            },
+            error: function (err) {
+                if (err.status == 401)
+                    window.location.replace("http://localhost:3698/dashboard/unauthorizedpage");
+            }
+        });
+
+
+        //add new
+
+        $('#addNew').on('click', function () {
+            $('#addModal').modal('show');
+            tokenCheck();
+            $.ajax({
+                type: "get",
+                url: "http://localhost:3698/api/category/",
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (res) {
+                    var formoption = "";
+                    $.each(res, function (index, item) {
+                        formoption += "<option value='" + item.Id + "'>" + item.Name + "</option>";
+                    });
+                    $('#CategoryId').append(formoption);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+
+        $('#addForm').on('submit', function (e) {
+            e.preventDefault();
+            tokenCheck();
+            var formData = new FormData();
+            formData.append('CategoryId', $('#CategoryId').val());
+            formData.append('Name', $('#Name').val());
+            formData.append('PurchasePrice', $('#PurchasePrice').val());
+            formData.append('SalesPrice', $('#SalesPrice').val());
+            formData.append('Description', $('#Description').val());
+            formData.append('Status', $('#Status').val());
+            formData.append('Image', $('input[type=file]')[0].files[0]);
+
+            $.ajax({
+                type: "post",
+                url: "http://localhost:3698/api/Product",
+                data: formData,
+                contentType: false,
+                processData:false,
+                success: function (res) {
+                    console.log("Added Successfully");
+                    location.reload();
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+
+
+
+        //edit
+        $(document).on('click', '#editBtn', function () {
+            tokenCheck();
+            function getCategory() {
+             $.ajax({
+                type: "get",
+                url: "http://localhost:3698/api/category/",
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (res) {
+                    var formoption = "";
+                    $.each(res, function (index, item) {
+                        formoption += "<option value='" + item.Id + "'>" + item.Name + "</option>";
+                    });
+                    $('#updateCategoryId').append(formoption);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+                });
+
+            }
+
+            var oldImage = null;
+            //get category
+            getCategory();
+            //get product by id for update
+            var id = $(this).parent().parent().children().eq(0).html();
+            $('#updateModal').modal('show');
+            $.ajax({
+                type: "get",
+                url: "http://localhost:3698/api/product/edit/"+id,
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                success: function (res) {
+                    $('#updateId').val(res[0].Id);
+                    $('#updateCategoryId').val(res[0].CategoryId);
+                    $('#updateName').val(res[0].Name);
+                    $('#updatePurchasePrice').val(res[0].PurchasePrice);
+                    $('#updateSalesPrice').val(res[0].SalesPrice);
+                    $('#updateDescription').val(res[0].Description);
+                    $('#updateStatus').val(res[0].Status);
+                    $("#updateImage").attr("src", res[0].Image);
+                    oldImage = res[0].Image;
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+
+         
+
+            
+            
+            //update
+            $('#updateForm').on('submit', function (e) {
+                tokenCheck();
+                e.preventDefault();
+                
+                var formData = new FormData();
+                formData.append('Id', $('#updateId').val());
+                formData.append('CategoryId', $('#updateCategoryId').val());
+                formData.append('Name', $('#updateName').val());
+                formData.append('PurchasePrice', $('#updatePurchasePrice').val());
+                formData.append('SalesPrice', $('#updateSalesPrice').val());
+                formData.append('Description', $('#updateDescription').val());
+                formData.append('Status', $('#updateStatus').val());
+                formData.append('Image', $('input[type=file]')[1].files[0]);
+                formData.append('oldImage', oldImage);
+                
+
+                $.ajax({
+                    type: "PUT",
+                    url: "http://localhost:3698/api/Product",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        console.log("Added Successfully");
+                        location.reload();
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            });
+        });
+
+
+
+
+
+
+        //delete
+        $(document).on('click', '#deleteBtn', function () {
+            tokenCheck();
+            var $self = $(this);
+            var id = $(this).parent().parent().children().eq(0).html();
+            //var image = $(this).parent().parent().children().eq(6).attr();
+            var image = $(this).parent().parent().children().eq(6).html(); 
+             
+
+            console.log(image);
+            var confirmation = confirm("Are you sure you want to remove the category?");
+            if (confirmation) {
+                $.ajax({
+                    type: 'Delete',
+                    url: 'http://localhost:3698/api/product/' + id,
+                    data: {
+                        image: image
+                    },
+                    success: function (res) {
+                        if (res == "204") {
+                            console.log("Data Deleted!!");
+                            $self.closest('tr').remove();
+                        }
+                        else
+                            console.log(res);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+
+        });
+
+
+
+    });
+
+
+
+</script>
+

@@ -1,0 +1,278 @@
+﻿
+@{
+    ViewBag.Title = "Category";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h6>Category</h6>
+<style>
+
+    .modal modal-body {
+        max-height: 400px;
+        width: 100px;
+    }
+
+    .modal-body {
+        padding-left: 30px;
+    }
+    /*#addNew{
+        margin:5px;
+    }*/
+    #records_table {
+        background-color: lightgray
+    }
+
+    #status {
+        padding: 1px
+    }
+
+    tr {
+        text-align: center
+    }
+</style>
+
+<table id="records_table" class="table-responsive-sm table-bordered table-striped" style="width:100%">
+
+    <tr style="background-color:darkgrey">
+        <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Status</th>
+        <th scope="col">
+            Action
+            <button class=" btn-default" id="addNew" style="margin-left:50px">Add New</button>
+        </th>
+
+    </tr>
+</table>
+
+
+
+
+
+<!--Add Modal Start -->
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Category</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+            <div class="modal-body">
+                <form id="addForm">
+                    <span class="text-danger" id="errorMessage"></span>
+                    <div class="md-form mb-5">
+                        <label>Name</label>
+                        <input type="text" id="name" name="name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <select name="status" id="status" class="form-control">
+                            <option value="" disabled selected>Choose your option</option>
+                            <option value="1">Active</option>
+                            <option value="0">InActive</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--Add Modal Start -->
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Category</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+            <div class="modal-body">
+                <form id="updateForm">
+                    <span class="text-danger" id="errorMessage"></span>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="hidden" id="updateId" name="name" class="form-control">
+                        <input type="text" id="updateName" name="name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" id="updateStatus" class="form-control">
+                            <option value="1">Active</option>
+                            <option value="0">InActive</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--Add Modal End -->
+
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+
+    //get data
+    $(document).ready(function () {
+        if (localStorage.getItem('token') == null) {
+            window.location.replace("http://localhost:3698/dashboard/login");
+        }
+
+        $.ajax({
+            url: "http://localhost:3698/api/category/",
+            type: "Get",
+            cache: false,
+            contentType: "application/json",
+            success: function (res) {
+                var trHTML = '';
+                $.each(res, function (index, item) {
+                    trHTML += '<tr><td>' + item.Id + '</td><td>'
+                        + item.Name + '</td><td>'
+                        + item.Status + '</td><td>'
+                        + "<button class='btn btn-warning btn-sm' type='button' id='editBtn'>Edit</button>" + " " + "<button class='btn btn-danger btn-sm' type='button' id='deleteBtn'>Delete</button>" + '</td></tr>';
+                });
+                $('#records_table').append(trHTML);
+            },
+            error: function (err) {
+                if (err.status == 401)
+                    window.location.replace("http://localhost:3698/dashboard/unauthorizedpage");
+            }
+        });
+
+
+        //add new
+
+        $('#addNew').on('click', function () {
+            $('#addModal').modal('show');
+        });
+        $('#addForm').on('submit', function (e) {
+            e.preventDefault();
+            var name = $('#name').val();
+            var status = $('#status').val();
+            $.ajax({
+                type: "post",
+                url: "http://localhost:3698/api/category/",
+                data: JSON.stringify({
+                    Name: name,
+                    Status: status,
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (res) {
+                    if (res == "200") {
+                        console.log("Add new Data Successfully!");
+                        $('#name').val("");
+                        $('#status').val(0);
+                        location.reload();
+                    }
+                    else {
+                        console.log(res);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+
+
+
+
+        //edit
+        $(document).on('click', '#editBtn', function () {
+            var id = $(this).parent().parent().children().eq(0).html();
+            var name = $(this).parent().parent().children().eq(1).html();
+            var status = $(this).parent().parent().children().eq(2).html();
+            $('#updateModal').modal('show');
+            $('#updateId').val(id);
+            $('#updateName').val(name);
+            $('#updateStatus').val(status);
+
+            //update
+            $('#updateForm').on('submit', function (e) {
+                e.preventDefault();
+                var updateId = $('#updateId').val();
+                var updateName = $('#updateName').val();
+                var updateStatus = $('#updateStatus').val();
+                $.ajax({
+                    type: 'put',
+                    url: 'http://localhost:3698/api/category/Put',
+                    data: JSON.stringify({
+                        Id: updateId,
+                        Name: updateName,
+                        Status: updateStatus,
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (res) {
+                        if (res == "200") {
+                            console.log("Updated Successfully!");
+                            location.reload();
+                        }
+                        else
+                            console.log(res);
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+
+                });
+            });
+        });
+
+
+
+
+
+
+        //delete
+        $(document).on('click', '#deleteBtn', function () {
+            var $self = $(this);
+            var id = $(this).parent().parent().children().eq(0).html();
+            var confirmation = confirm("Are you sure you want to remove the category?");
+            if (confirmation) {
+                $.ajax({
+                    type: 'Delete',
+                    url: 'http://localhost:3698/api/category/' + id,
+                    success: function (res) {
+                        if (res == "204") {
+                            console.log("Data Deleted!!");
+                            $self.closest('tr').remove();
+                        }
+                        else
+                            console.log(res);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+
+        });
+
+
+
+    });
+
+
+
+</script>
+
+
+

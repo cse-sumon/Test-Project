@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("Dashboard", "Login", "Dashboard", new { area = "" }, null)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        <div class="row">
+            <div class="col-md-2" style="background-color:#gainsboro; height:500px">
+                <ul class="nav nav-stacked" id="categoryLI">
+                    <li class="active">@Html.ActionLink("All Categories", "Index", "Home", new {  })</li>
+
+
+                </ul>
+            </div>
+
+            @*main body*@
+            <div class="col-md-8">
+                @RenderBody()
+            </div>
+            <div class="col-md-2">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-success">Dapibus ac facilisis in</li>
+                    <li class="list-group-item list-group-item-info">Cras sit amet nibh libero</li>
+                    <li class="list-group-item list-group-item-warning">Porta ac consectetur ac</li>
+                    <li class="list-group-item list-group-item-danger">Vestibulum at eros</li>
+                </ul>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-success">Dapibus ac facilisis in</a>
+                    <a href="#" class="list-group-item list-group-item-info">Cras sit amet nibh libero</a>
+                    <a href="#" class="list-group-item list-group-item-warning">Porta ac consectetur ac</a>
+                    <a href="#" class="list-group-item list-group-item-danger">Vestibulum at eros</a>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <footer style="background-color:gainsboro;padding:20px; text-align:center; margin-top:200px">
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: "http://localhost:3698/api/FrontEnd/GetCategory",
+            type: "Get",
+            cache: false,
+            contentType: "application/json",
+            success: function (res) {
+               
+                $.each(res, function (index, item) {
+                    //$('#category').val(item.Name);
+                    $("#categoryLI").append(' <li role="presentation"  class="active"><a id="category" value="' + item.Id +'" href="#">'+item.Name+'</a></li>');
+                });
+                //$('#categoryLI').append(trHTML);
+            },
+            error: function (err) {
+                if (err.status == 401)
+                    window.location.replace("http://localhost:3698/dashboard/unauthorizedpage");
+            }
+        });
+
+        
+
+
+    });
+</script>
